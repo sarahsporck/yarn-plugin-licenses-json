@@ -59,15 +59,14 @@ export const getTree = async (
     const key = structUtils.stringifyLocator(
       structUtils.isVirtualLocator(locator) ? structUtils.devirtualizeLocator(locator) : locator
     )
-
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    const nodeValue = formatUtils.tuple(formatUtils.Type.DEPENDENT, {
-      locator,
-      descriptor
-    })
-
-    const children = {
+    const packageNode: treeUtils.TreeNode = {
+      value: formatUtils.tuple(formatUtils.Type.DEPENDENT, {
+        locator,
+        descriptor
+      })
+    }
+    const value = {
+      package: packageNode,
       ...(url
         ? {
             url: {
@@ -95,8 +94,7 @@ export const getTree = async (
     }
 
     const node: treeUtils.TreeNode = {
-      value: nodeValue,
-      children
+      children: value
     }
 
     rootChildren[key] = node
