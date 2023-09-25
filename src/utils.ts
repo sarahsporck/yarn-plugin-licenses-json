@@ -88,7 +88,7 @@ export const getTree = async (
             }
           }
         : {}),
-      liscense: {
+      license: {
         value: formatUtils.tuple(formatUtils.Type.NO_HINT, license)
       }
     }

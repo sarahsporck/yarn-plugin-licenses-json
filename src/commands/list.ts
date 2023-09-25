@@ -1,6 +1,7 @@
 import { WorkspaceRequiredError } from '@yarnpkg/cli'
 import { CommandContext, Configuration, Project, treeUtils } from '@yarnpkg/core'
 import { Command, Usage, Option } from 'clipanion'
+import fmt2json from 'format-to-json'
 import { getTree } from '../utils'
 
 export class LicensesListCommand extends Command<CommandContext> {
@@ -46,10 +47,18 @@ export class LicensesListCommand extends Command<CommandContext> {
 
     const tree = await getTree(project, this.json, this.recursive, this.production)
 
+    if (this.json) {
+      const iterator = Array.isArray(tree.children) ? tree.children.values() : Object.values(tree.children ?? {})
+
+      for (const child of iterator)
+        if (child) this.context.stdout.write(`${fmt2json(JSON.stringify(treeUtils.treeNodeToJson(child)))}\n`)
+
+      return
+    }
+
     treeUtils.emitTree(tree, {
       configuration,
       stdout: this.context.stdout,
-      json: this.json,
       separators: 1
     })
   }
