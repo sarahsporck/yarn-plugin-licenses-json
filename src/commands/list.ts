@@ -18,10 +18,6 @@ export class LicensesListCommand extends Command<CommandContext> {
     description: `Format output as JSON`
   })
 
-  excludeMetadata = Option.Boolean(`--exclude-metadata`, false, {
-    description: `Exclude dependency metadata from output`
-  })
-
   static usage: Usage = Command.Usage({
     description: `display the licenses for all packages in the project`,
     details: `
@@ -48,7 +44,7 @@ export class LicensesListCommand extends Command<CommandContext> {
 
     await project.restoreInstallState()
 
-    const tree = await getTree(project, this.json, this.recursive, this.production, this.excludeMetadata)
+    const tree = await getTree(project, this.json, this.recursive, this.production)
 
     treeUtils.emitTree(tree, {
       configuration,
