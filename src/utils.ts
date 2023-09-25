@@ -1,5 +1,6 @@
 import {
   Project,
+  Workspace,
   Cache,
   ThrowReport,
   Descriptor,
@@ -7,10 +8,12 @@ import {
   treeUtils,
   structUtils,
   miscUtils,
-  formatUtils
+  formatUtils,
+  Manifest,
+  IdentHash
 } from '@yarnpkg/core'
 import { PortablePath, ppath, npath, Filename } from '@yarnpkg/fslib'
-import * as hostedGitInfo from 'hosted-git-info'
+import hostedGitInfo from 'hosted-git-info'
 import { resolveLinker } from './linkers'
 
 /**
@@ -27,6 +30,7 @@ export const pluginRootDir: PortablePath =
  * Get the license tree for a project
  *
  * @param {Project} project - Yarn project
+ * @param {Workspace} workspace - Current workspace
  * @param {boolean} json - Whether to output as JSON
  * @param {boolean} recursive - Whether to compute licenses recursively
  * @param {boolean} production - Whether to exclude devDependencies
@@ -34,15 +38,15 @@ export const pluginRootDir: PortablePath =
  */
 export const getTree = async (
   project: Project,
+  workspace: Workspace,
   json: boolean,
   recursive: boolean,
   production: boolean
 ): Promise<treeUtils.TreeNode> => {
   const rootChildren: treeUtils.TreeMap = {}
-  const licenseRoot: treeUtils.TreeMap = { licenses: { children: rootChildren } }
-  const root: treeUtils.TreeNode = { children: licenseRoot }
+  const root: treeUtils.TreeNode = { children: rootChildren }
 
-  const sortedPackages = await getSortedPackages(project, recursive, production)
+  const sortedPackages = await getSortedPackages(project, workspace, recursive, production)
 
   const linker = resolveLinker(project.configuration.get('nodeLinker'))
 
@@ -103,41 +107,88 @@ export const getTree = async (
   return root
 }
 
+const getDescriptorsRecursive = (
+  project: Project,
+  workspace: Workspace | null,
+  dependencies: Map<IdentHash, Descriptor>,
+  descriptorsSoFar: Descriptor[],
+  production: boolean,
+  recursive: boolean
+): Array<Descriptor> => {
+  const descriptors: Descriptor[] = []
+  for (const [identHash, descriptor] of dependencies.entries()) {
+    if (production && workspace && workspace.manifest.devDependencies.has(identHash)) {
+      continue
+    }
+    if (descriptorsSoFar.includes(descriptor)) {
+      continue
+    }
+    descriptors.push(descriptor)
+    if (recursive) {
+      const resolution = project.storedResolutions.get(descriptor.descriptorHash)
+      if (!resolution) {
+        throw new Error(`Assertion failed: The resolution should have been registered`)
+      }
+      const pkg = project.storedPackages.get(resolution)
+
+      if (!pkg) {
+        console.log(`Assertion failed: The package could not be found`)
+        continue
+      }
+      descriptors.push(
+        ...getDescriptorsRecursive(
+          project,
+          null,
+          pkg.dependencies,
+          [...descriptorsSoFar, ...descriptors],
+          production,
+          recursive
+        )
+      )
+    }
+  }
+  return descriptors
+}
+
 /**
  * Get a sorted map of packages for the project
  *
  * @param {Project} project - Yarn project
+ * @param {Workspace} workspace - Yarn workspace
  * @param {boolean} recursive - Whether to get packages recursively
  * @param {boolean} production - Whether to exclude devDependencies
  * @returns {Promise<Map<Descriptor, Package>>} Map of packages in the project
  */
 export const getSortedPackages = async (
   project: Project,
+  workspace: Workspace,
   recursive: boolean,
   production: boolean
 ): Promise<Map<Descriptor, Package>> => {
   const packages = new Map<Descriptor, Package>()
-  let storedDescriptors: Iterable<Descriptor>
+  let storedDescriptors: Set<Descriptor>
+  const workspaces = workspace.getRecursiveWorkspaceDependencies({
+    dependencies: production ? ['dependencies'] : Manifest.hardDependencies
+  })
+  workspaces.add(workspace)
+  storedDescriptors = new Set()
+
   if (recursive) {
-    if (production) {
-      for (const workspace of project.workspaces) {
-        workspace.manifest.devDependencies.clear()
-      }
-      const cache = await Cache.find(project.configuration)
-      await project.resolveEverything({ report: new ThrowReport(), cache })
-    }
-    storedDescriptors = project.storedDescriptors.values()
-  } else {
-    storedDescriptors = project.workspaces.flatMap((workspace) => {
-      const dependencies = [workspace.anchoredDescriptor]
-      for (const [identHash, dependency] of workspace.dependencies.entries()) {
-        if (production && workspace.manifest.devDependencies.has(identHash)) {
-          continue
-        }
-        dependencies.push(dependency)
-      }
-      return dependencies
-    })
+    const cache = await Cache.find(project.configuration, { immutable: true })
+    await project.resolveEverything({ report: new ThrowReport(), cache })
+  }
+  for (const workspace of workspaces) {
+    storedDescriptors = new Set([
+      ...getDescriptorsRecursive(
+        project,
+        workspace,
+        workspace.dependencies,
+        [...storedDescriptors],
+        production,
+        recursive
+      ),
+      ...storedDescriptors
+    ])
   }
 
   const sortedDescriptors = miscUtils.sortMap(storedDescriptors, [
@@ -278,7 +329,7 @@ const normalizeManifestRepositoryUrl = (
     typeof manifestRepositoryValue === 'string' ? manifestRepositoryValue : manifestRepositoryValue?.url
   if (!rawRepositoryUrl) return rawRepositoryUrl
   const hosted = hostedGitInfo.fromUrl(rawRepositoryUrl)
-  return !hosted || hosted.getDefaultRepresentation() !== 'shortcut' ? rawRepositoryUrl : hosted.https()
+  return !hosted ? rawRepositoryUrl : hosted.https({ noGitPlus: true })
 }
 
 const stringifyKeyValue = (key: string, value: string, json: boolean) => {

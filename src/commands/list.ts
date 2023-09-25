@@ -3,6 +3,7 @@ import { CommandContext, Configuration, Project, treeUtils } from '@yarnpkg/core
 import { Command, Usage, Option } from 'clipanion'
 import fmt2json from 'format-to-json'
 import { getTree } from '../utils'
+import fs from 'fs'
 
 export class LicensesListCommand extends Command<CommandContext> {
   static paths = [[`licenses`, `list`]]
@@ -18,6 +19,8 @@ export class LicensesListCommand extends Command<CommandContext> {
   json = Option.Boolean(`--json`, false, {
     description: `Format output as JSON`
   })
+
+  file = Option.String('--out-file', { required: false, description: 'Write output to file (as json)' })
 
   static usage: Usage = Command.Usage({
     description: `display the licenses for all packages in the project`,
@@ -44,21 +47,21 @@ export class LicensesListCommand extends Command<CommandContext> {
     }
 
     await project.restoreInstallState()
-
-    const tree = await getTree(project, this.json, this.recursive, this.production)
+    const out = this.file ? fs.createWriteStream(this.file) : this.context.stdout
+    const tree = await getTree(project, workspace, this.json, this.recursive, this.production)
 
     if (this.json) {
-      const iterator = Array.isArray(tree.children) ? tree.children.values() : Object.values(tree.children ?? {})
+      const licenses = fmt2json(JSON.stringify(treeUtils.treeNodeToJson(tree)))
 
-      for (const child of iterator)
-        if (child) this.context.stdout.write(`${fmt2json(JSON.stringify(treeUtils.treeNodeToJson(child)))}\n`)
+      out.write(licenses)
 
       return
     }
 
     treeUtils.emitTree(tree, {
       configuration,
-      stdout: this.context.stdout,
+      stdout: out,
+      json: false,
       separators: 1
     })
   }

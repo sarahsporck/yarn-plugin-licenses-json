@@ -78,11 +78,14 @@ describe('getTree', () => {
       },
       { useRc: false }
     )
-    const { project } = await Project.find(configuration, cwd)
+    const { project, workspace } = await Project.find(configuration, cwd)
 
+    if (!workspace) {
+      throw Error('Workspace should exist')
+    }
     await project.restoreInstallState()
 
-    const tree = await getTree(project, false, recursive, production)
+    const tree = await getTree(project, workspace, false, recursive, production)
 
     let stdout = ''
     const stdoutStream = new Writable({
