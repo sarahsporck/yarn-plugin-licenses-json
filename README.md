@@ -6,7 +6,7 @@ This is a Yarn v3 plugin that adds `yarn licenses` commands (similar to what Yar
 ## Install
 
 ```
-yarn plugin import https://raw.githubusercontent.com/sarahsporck/yarn-plugin-licenses-json/v0.12.0/bundles/%40yarnpkg/plugin-licenses.js
+yarn plugin import https://raw.githubusercontent.com/sarahsporck/yarn-plugin-licenses-json/v0.13.0/bundles/%40yarnpkg/plugin-licenses.js
 ```
 
 ## Usage
