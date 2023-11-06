@@ -2,8 +2,8 @@
 # Manual changes might be lost - proceed with caution!
 
 __metadata:
-  version: 6
-  cacheKey: 8
+  version: 8
+  cacheKey: 10
 
 "@esbuild/android-arm@npm:^0.17.10":
   version: 0.17.10
@@ -16,15 +16,15 @@ __metadata:
   version: 0.24.0
   resolution: "axios@npm:0.24.0"
   dependencies:
-    follow-redirects: ^1.14.4
-  checksum: 468cf496c08a6aadfb7e699bebdac02851e3043d4e7d282350804ea8900e30d368daa6e3cd4ab83b8ddb5a3b1e17a5a21ada13fc9cebd27b74828f47a4236316
+    follow-redirects: "npm:^1.14.4"
+  checksum: 4c5a7a5a45c909b4ce73fbf54b1fbc52a2290fc37cc51e64f8ef2ba8ac5f76a2e369a08ddfd7ec50317528d5aa55f5987cc56fb320923ef87e1b87f8ff05b5ba
   languageName: node
   linkType: hard
 
 "caseless@npm:^0.12.0":
   version: 0.12.0
   resolution: "caseless@npm:0.12.0"
-  checksum: b43bd4c440aa1e8ee6baefee8063b4850fd0d7b378f6aabc796c9ec8cb26d27fb30b46885350777d9bd079c5256c0e1329ad0dc7c2817e0bb466810ebb353751
+  checksum: ea1efdf430975fdbac3505cdd21007f7ac5aa29b6d4d1c091f965853cd1bf87e4b08ea07b31a6d688b038872b7cdf0589d9262d59c699d199585daad052aeb20
   languageName: node
   linkType: hard
 
@@ -48,14 +48,14 @@ __metadata:
   peerDependenciesMeta:
     debug:
       optional: true
-  checksum: 40c67899c2e3149a27e8b6498a338ff27f39fe138fde8d7f0756cb44b073ba0bfec3d52af28f20c5bdd67263d564d0d8d7b5efefd431de95c18c42f7b4aef457
+  checksum: 94b8cca8123c719273788174728fea5789267ab077784eae095e41fba0b5944b9fabda6b98164d15f0166914489b4d3896e3e181dd2d67b9f1b3969eb14f7c0f
   languageName: node
   linkType: hard
 
 "function-bind@npm:^1.1.1":
   version: 1.1.1
   resolution: "function-bind@npm:1.1.1"
-  checksum: b32fbaebb3f8ec4969f033073b43f5c8befbb58f1a79e12f1d7490358150359ebd92f49e72ff0144f65f2c48ea2a605bff2d07965f548f6474fd8efd95bf361a
+  checksum: d83f2968030678f0b8c3f2183d63dcd969344eb8b55b4eb826a94ccac6de8b87c95bebffda37a6386c74f152284eb02956ff2c496897f35d32bdc2628ac68ac5
   languageName: node
   linkType: hard
 
@@ -63,8 +63,8 @@ __metadata:
   version: 1.0.3
   resolution: "has@npm:1.0.3"
   dependencies:
-    function-bind: ^1.1.1
-  checksum: b9ad53d53be4af90ce5d1c38331e712522417d017d5ef1ebd0507e07c2fbad8686fffb8e12ddecd4c39ca9b9b47431afbb975b8abf7f3c3b82c98e9aad052792
+    function-bind: "npm:^1.1.1"
+  checksum: a449f3185b1d165026e8d25f6a8c3390bd25c201ff4b8c1aaf948fc6a5fcfd6507310b8c00c13a3325795ea9791fcc3d79d61eafa313b5750438fc19183df57b
   languageName: node
   linkType: hard
 
@@ -72,7 +72,7 @@ __metadata:
   version: 1.2.1
   resolution: "is-ci@npm:1.2.1"
   dependencies:
-    ci-info: ^1.5.0
+    ci-info: "npm:^1.5.0"
   bin:
     is-ci: bin.js
   checksum: eca06c5626e54ec01be6f9114a8f19b3f571602cfe66458e42ccc42e401e2ebbe1bd3b2fcaa93b5896b9c759e964f3c7f4d9b2d0f4fc4ef5dba78a7c4825e0be
@@ -83,7 +83,7 @@ __metadata:
   version: 2.0.0
   resolution: "is-ci@npm:2.0.0"
   dependencies:
-    ci-info: ^2.0.0
+    ci-info: "npm:^2.0.0"
   bin:
     is-ci: bin.js
   checksum: 77b869057510f3efa439bbb36e9be429d53b3f51abd4776eeea79ab3b221337fe1753d1e50058a9e2c650d38246108beffb15ccfd443929d77748d8c0cc90144
@@ -115,10 +115,10 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "package1@workspace:packages/package1"
   dependencies:
-    axios: ^0.24.0
-    is-ci: ^2.0.0
-    is-function: ^1.0.2
-    is-promise: ^3.0.0
+    axios: "npm:^0.24.0"
+    is-ci: "npm:^2.0.0"
+    is-function: "npm:^1.0.2"
+    is-promise: "npm:^3.0.0"
   languageName: unknown
   linkType: soft
 
@@ -126,12 +126,12 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "test-package@workspace:."
   dependencies:
-    "@esbuild/android-arm": ^0.17.10
-    axios: ^0.24.0
-    caseless: ^0.12.0
-    has: ^1.0.3
-    is-ci: ^1.0.0
-    is-promise: ^4.0.0
+    "@esbuild/android-arm": "npm:^0.17.10"
+    axios: "npm:^0.24.0"
+    caseless: "npm:^0.12.0"
+    has: "npm:^1.0.3"
+    is-ci: "npm:^1.0.0"
+    is-promise: "npm:^4.0.0"
   dependenciesMeta:
     "@esbuild/android-arm":
       optional: true
