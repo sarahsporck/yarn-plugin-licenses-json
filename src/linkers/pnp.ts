@@ -3,13 +3,12 @@
 
 import { getPnpPath } from '@yarnpkg/plugin-pnp'
 import { Package, Project, structUtils } from '@yarnpkg/core'
-import { VirtualFS, ZipOpenFS, PortablePath } from '@yarnpkg/fslib'
-import { getLibzipSync } from '@yarnpkg/libzip'
+import { VirtualFS, PortablePath } from '@yarnpkg/fslib'
+import { getLibzipSync, ZipOpenFS } from '@yarnpkg/libzip'
 import { getArchitectureSet } from './utils'
 
 /**
  * Get package path with `pnp` linker for a given Yarn project and package
- *
  * @param {Project} project - Yarn project
  * @param {Package} pkg - Yarn package
  * @returns {Promise<PortablePath | null>} Package path
@@ -37,7 +36,6 @@ let pnpApi: any
 
 /**
  * Cache PnP API from `.pnp.cjs` (or similar), if it has not already been cached
- *
  * @param {Project} project - Yarn project
  * @returns {void}
  */

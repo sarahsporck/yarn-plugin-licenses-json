@@ -28,7 +28,6 @@ export const pluginRootDir: PortablePath =
 
 /**
  * Get the license tree for a project
- *
  * @param {Project} project - Yarn project
  * @param {Workspace} workspace - Current workspace
  * @param {boolean} json - Whether to output as JSON
@@ -152,7 +151,6 @@ const getDescriptorsRecursive = (
 
 /**
  * Get a sorted map of packages for the project
- *
  * @param {Project} project - Yarn project
  * @param {Workspace} workspace - Yarn workspace
  * @param {boolean} recursive - Whether to get packages recursively
@@ -182,7 +180,7 @@ export const getSortedPackages = async (
       ...getDescriptorsRecursive(
         project,
         workspace,
-        workspace.dependencies,
+        workspace.anchoredPackage.dependencies,
         [...storedDescriptors],
         production,
         recursive
@@ -222,7 +220,6 @@ type Author = { name?: string; email?: string; url?: string }
 
 /**
  * Get author information from a manifest's author string
- *
  * @param {string} author - format: "name (url) <email>"
  * @returns {Author} parsed author information
  */
@@ -252,7 +249,6 @@ export function parseAuthor(author: string) {
 
 /**
  * Get license information from a manifest
- *
  * @param {ManifestWithLicenseInfo} manifest - Manifest with license information
  * @returns {LicenseInfo} License information
  */
@@ -302,7 +298,6 @@ const UNKNOWN_LICENSE = 'UNKNOWN'
 
 /**
  * Normalize a manifest license value into a license string
- *
  * @param {ManifestLicenseValue} manifestLicenseValue - Manifest license value
  * @returns {string} License string
  */
@@ -318,7 +313,6 @@ type LicenseInfo = {
 
 /**
  * Normalize a manifest repository value into a repository URL, if found
- *
  * @param {ManifestWithLicenseInfo['repository']} manifestRepositoryValue - Manifest repository value
  * @returns {string|undefined} Repository URL, if found
  */
